@@ -1,0 +1,29 @@
+	actors: 
+		User
+		Reseller
+	actions:
+		charge
+		withdraw
+
+	User ---------------------- charge -------------------------- Reseller
+	User ---------------------- withdraw ------------------------ Reseller
+
+	actors: 
+		User
+		User
+	actions: 
+		pay
+		transfer
+
+	User --------------------- pay ----------------------------- User
+	User --------------------- transfer ------------------------ User
+
+	actors: 
+		User
+	actions:
+		findReseller
+		manageAccount
+
+	User --------------------- findReseller
+	User --------------------- manageAccount
+

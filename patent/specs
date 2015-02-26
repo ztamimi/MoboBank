@@ -1,0 +1,41 @@
+specs:
+	techonology: client, server.
+	procedure: deposit, pay, transfer.
+	use: atm charge, pay taxi, point of sale.
+	benefits:
+
+Enable
+- client software (agent or app) that runs on client device.
+- client device: potentially mobile computing device such as smartphone. also possible to be web- or internet-based computing machine.
+- server: software that interacts with client agent and update data storage. 
+- data storage: is combination of data and data-engine with the purpose of storing and retriving data.
+data includes but not limited to user accounts, transactions, and possible other data such as notes, preferences, recent transactions, or favorite contacts.
+
+* each client has an account with unique identifier and potentially is secured with secret passcode. 
+
+* client app is potentially run on a mobile computing device such as smartphones. However the mobility is the nature of usage and not a limiting factor of the client app itself. the client agent can potentially run on any computing machine with internet connection.
+
+* the data storage is not limited to one copy of the data or one computing machine. In fact it is more likely to have a set of distributed machines and multiple replicas of the data. the data can also be distributed or partitioned based on geographical location. 
+
+* data is stored fully on remote data storage. although part of the data can be stored locally on the clients device. this fasion is called cloud computing and makes it possible to restore data in case a user switches device. 
+
+* transaction represents a set of steps that results in a monetary amount being moved from one account to another. a transaction has multiple properties such as amount, source/destination accounts, currency, data/time, status, geographical location (IP addresses), type (transfer, payment, donation), and notes.
+
+* transaction status can help revert a transaction in case of interrupted connection, potential errors, and security violations. examples of transaction statuses include: initiated, received, allowed/denied, processed, complete, confirmed.
+
+procedure:
+the purpose of the invention is to accomplish the following transactions: (1) deposit, (2) pay, (3) transfer money.
+
+(1) Deposite: is the conversion of currency, bank balance, credit, or other monetray forms (physical or electronic) into electronic balance in the described invention and of the same amount and currency. . the deposit procedure can be accomplished using pin-scratch cards, service counter at a store, electronic payment method, or atm. 
+
+(2) Payment: the payer select the payee identifier (or alias) and specify payment amount (possibly currency). The payment procedure progresses if the payer has adquet balance and has active account. If transaction is allowed, the amount is deducted from the payee balance and added to the payers account balance, and the transaction data is updated both locally and remotly at the data storage. finally, both payee and payer receive confirmation messages including a token that matches at both ends.
+
+(3) Transfer is very similar to payment; initially the recipient and monitary amount are specified. In transaction is allowed, both parties will receive the same confirmation token when the transaction is completed.
+
+Notes on client agent id: the id should be unique. however the agent can have multiple aliases, usable as identifiers. the purpose of those aliases is to help users, especially service provider and good sellers, have easy to remember or marketable ids. A potential id can be the phone number of the client device. Also, user's email can be used, since it is unique and commonly exchanged.
+
+Notes on confirmation token. a token can be a string, a number, or a code such as QR code, which is easy to capture and generate. Such token or code can be employeed to validate the confirmation number of the payer and payee autonomously.
+
+Notes on transfer. the described invention is finanial service which is a controlled industry. because of that the amount, currency, destination, can potentially be regulated by the local government.
+
+

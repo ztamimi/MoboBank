@@ -1,0 +1,15 @@
+method for identifying phone number of a smartphone
+benefit: phone number is unique and can be ideal for userId. phone number is indirectly connected to user identity, and thus can be useful in sequrity issues.
+client agent is a software that runs on phone device. 
+a phone device has interface to both phone network and internet.
+server agent is a system of software and hardware that provides client agent with services such as message passing between clients. the server has access to both internet and phone network.
+phone network is telecommunication network that can be either wireless, landline or combination of both. In addition to voice channel, the network is has data channel and can transmitt sms.
+internet is a digital network of computers connected using variety of telecommunication networks, and operate using protocols such as TCP/IP.
+the method function as follows: 
+* the client connects to the server agent over the internet. 
+* the server assigns the connecting client a unique id, and send that id back to the client over the internet. 
+* the client agent sends sms over phone network to the server agent containing the clients id. 
+* the server agent recieves the client sms and extract the phone number of the device on which the client is running as well as its unique id. 
+* the server agent, sends the client's phone number to the client agent over the internet connection. 
+* the client agent displays the phone number to the user for confirmation.
+

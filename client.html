@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+
+<title>MoboBank Client</title>
+</head>
+
+<body>
+<!-- begin user interface -->
+<div data-role="page" id="transfer">
+    <header data-role="header">
+        <h1>Transfer money</h1>
+    </header>
+    
+    <div data-role="content">
+        <form method="" action="">
+            <label for="balance">Balance</label>
+            <input type="text" id="balance" disabled value="" placeholder="loading...">
+            <input type="hidden" id="type" value="transfer">
+            <label for="transferTo">Transfer To:</label>
+            <input type="text" id="transferTo" value="" placeholder="person to transfer to...">
+            <label for="transferAmount">Amount:</label>
+            <input type="number" id="transferAmount" value="" placeholder="amount to transfer...">
+            <label for="transferNote">Note: </label>
+            <textarea id="transferNote"></textarea>
+            <input type="button" id="transferBtn" value="Transfer Now!" class="ui-btn-b">
+        </form>
+    </div>
+    
+</div>
+<!-- end user interface -->
+
+<!-- begin third-party lib -->
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script src="http://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+<!-- end third-party lib -->
+
+<!-- begin ui script -->
+<script>
+	//=================================================================
+	// app object
+	var app = {};
+	
+	app.init = function(name, id, url, debug) {
+            app.name = name;
+            app.id = id;
+            app.url = url;
+            app.debug = debug;
+            
+            ui.init();
+
+            account.init(app.id);
+            
+            backEnd.init();
+	};
+	
+	//=================================================================
+	// ui object
+	var ui = {};
+	
+	ui.init = function() {
+            ui.balance = $('#balance');
+            ui.type = $('#type');
+            ui.transferTo = $('#transferTo');
+            ui.transferAmount = $('#transferAmount');
+            ui.transferNote = $('#transferNote');
+            ui.transferBtn = $('#transferBtn');
+            
+            ui.registerEvents();
+	};
+
+        ui.registerEvents = function() {
+            ui.transferBtn.on('click', ui.passData);
+	};
+        
+	// ui functions
+        ui.passData = function() {
+            var type = ui.type.val();
+            var to = ui.transferTo.val();
+            var amount = ui.transferAmount.val();
+            var note = "";
+            transaction.init(type, to, amount, note);
+        };
+        
+        ui.updateBalance = function() {
+            ui.balance.val(account.balance);
+        };
+        
+        //=================================================================
+        // transaction object
+        var transaction = {};
+        
+        transaction.init = function(type, to, amount, note) {
+            transaction.type = type;
+            transaction.to = to;
+            transaction.amount = amount;
+            transaction.note = note;
+            
+            transaction.status = "pending";
+            transaction.from = account.id;
+            transaction.time = Date.now();
+           
+            switch(transaction.type) {
+                case 'deposit':
+                    console.log("transaction type: deposit");
+                    transaction.deposit();
+                    break;
+                    
+                case 'transfer':
+                    console.log("transaction type: transfer");
+                    transaction.transfer();
+                    break;
+            };
+            
+        };
+        
+        transaction.transfer = function() {            
+            if (account.balance < transaction.amount) {
+                console.log("Error, cannot transfer amount more than account balance");
+                return;
+            }
+            
+            var currentBalance = account.balance;
+            account.balance -= transaction.amount;
+            account.balance = backEnd.transaction('balance', currentBalance, account.balance);
+        };
+        
+        transaction.deposit = function() {
+            var currentBalance = account.balance;
+            account.balance = (account.balance || 0) + transaction.amount;
+            backEnd.transaction('balance', currentBalance, account.balance);
+        };
+        //=================================================================
+        // account object
+        var account = {};
+        
+        account.init = function() {
+            account.id = app.id;
+            account.balance = null;
+        };
+        
+        //=================================================================
+	// backEnd object
+	var backEnd = {};
+	
+	backEnd.init = function() {        
+            var url = app.url + '/' + app.name + '/' + app.id + '/';
+                                
+            backEnd.ref = new Firebase(url);
+               
+            // register backEnd events
+            backEnd.ref.on('child_added', backEnd.receive); 
+            backEnd.ref.on('child_changed', backEnd.receive);
+	};
+        /*
+	backEnd.send = function(obj) {
+            if (app.debug)
+		console.log("backEnd.send: " + obj);
+            backEnd.ref.update(obj);
+	};
+        */
+        backEnd.transaction = function(key, currentValue, newValue) {
+            backEnd.ref.child(key).transaction(function(currentValue) {
+                return newValue;
+            });
+        };
+	
+	backEnd.receive = function(snapshot) {
+            var value = snapshot.val();
+            var key = snapshot.key();
+                
+            if (app.debug) {
+		console.log("backEnd.receive");
+                console.log(key + ": " + value);
+            }
+                
+            switch(key) {
+                case 'balance': 
+                    var balance = parseInt(value);
+                    account.balance = balance;
+                    ui.updateBalance();
+                    break;
+                
+            }
+	};
+	//=================================================================
+	// main
+        
+        app.init('MoboBank', '00970599548966', 'https://blazing-heat-3187.firebaseio.com/', true);
+        
+        // injection code
+        
+        transaction.init('deposit', '00970599548966', 10.00, "deposit");
+
+</script>
+<!-- end ui script -->
+
+</body>
+
+</html>

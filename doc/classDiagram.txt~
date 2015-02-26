@@ -1,0 +1,32 @@
+	class: Transaction
+	attributes:
+		type: 		enum(charge, pay, withdraw, transfer)
+		amount: 	integer
+		currenty: 	enum(dollar, euro, etc)
+		from: 		userId
+		to: 		userId
+		start: 		dateTime
+		end: 		dateTime
+		status: 	enum(pending, sent, received, complete)
+
+	class: User
+	attributes:
+		userId: 	string			//default is primaryPhoneNum.
+		balance: 	{amount, currency}
+		PhoneNum: 	phoneNumber  		//(countryCode)-areaCode-mobileNumber
+		userStatus: 	enum(pending, active, blocked, suspended)
+		startDate:	dateTime
+
+	class: Business		--------> User
+	attributes:
+		contact: 	{address, email, facebook, twitter, website, fax, phone}
+		legalName: 	string 			// legal name
+		primaryAccount:	enum{bank, credit}
+		bankAccount: 	{bankName, branch, address, routingNum, accountNum, accountType}
+		creditCard:	{cardType, cardNumber, expirationDate, authorizationCode}
+		
+	class: Reseller		------- > Business
+		location:	map{latitude/longitude}
+		resellerStatus:	enum(verified, active, expired)
+		ratings:	{count, stars}
+		qrCode:		image

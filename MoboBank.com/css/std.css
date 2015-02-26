@@ -1,0 +1,20 @@
+body {
+	background-image: url(img/greece-2.jpg);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	background-color: #464646;
+	padding-top: 70px;
+} 
+
+@media only screen and (max-width: 767px) {
+	body {
+		background-image: url(img/greece-2_mobile_768.jpg);
+	}
+}
+
+section {
+	background-color: rgba(0, 0, 0, 0.6);
+	color: white;
+}
