@@ -101,7 +101,7 @@
             
             transaction.status = "pending";
             transaction.from = account.id;
-            transaction.time = Date.now();
+            transaction.time = new Date().toJSON();
            
             switch(transaction.type) {
                 case 'deposit':
@@ -122,17 +122,15 @@
                 console.log("Error, cannot transfer amount more than account balance");
                 return;
             }
-            
-            var currentBalance = account.balance;
-            account.balance -= transaction.amount;
-            account.balance = backEnd.transaction('balance', currentBalance, account.balance);
+            backEnd.trans('balance', -transaction.amount);
+            backEnd.push('trans', {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, time: transaction.time, status: transaction.status});
         };
         
         transaction.deposit = function() {
-            var currentBalance = account.balance;
-            account.balance = (account.balance || 0) + transaction.amount;
-            backEnd.transaction('balance', currentBalance, account.balance);
+            backEnd.trans('balance', transaction.amount);
+            backEnd.push('trans', {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, time: transaction.time, status: transaction.status}); 
         };
+        
         //=================================================================
         // account object
         var account = {};
@@ -154,6 +152,8 @@
             // register backEnd events
             backEnd.ref.on('child_added', backEnd.receive); 
             backEnd.ref.on('child_changed', backEnd.receive);
+            
+            
 	};
         /*
 	backEnd.send = function(obj) {
@@ -162,12 +162,16 @@
             backEnd.ref.update(obj);
 	};
         */
-        backEnd.transaction = function(key, currentValue, newValue) {
+	backEnd.push = function(key, obj) {
+            backEnd.ref.child(key).push(obj);
+        };
+        
+        backEnd.trans = function(key, shift) {
             backEnd.ref.child(key).transaction(function(currentValue) {
-                return newValue;
+                return currentValue + shift;
             });
         };
-	
+        
 	backEnd.receive = function(snapshot) {
             var value = snapshot.val();
             var key = snapshot.key();
@@ -175,17 +179,25 @@
             if (app.debug) {
 		console.log("backEnd.receive");
                 console.log(key + ": " + value);
+                console.log(JSON.stringify(value));
             }
                 
             switch(key) {
                 case 'balance': 
-                    var balance = parseInt(value);
+                    var balance = parseFloat(value);
                     account.balance = balance;
                     ui.updateBalance();
                     break;
-                
+               /*     
+                default:
+                    var obj = JSON.parse(value);
+                    console.log(JSON.stringify(obj));
+                    break;
+                    */
             }
 	};
+        
+        
 	//=================================================================
 	// main
         
