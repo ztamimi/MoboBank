@@ -79,10 +79,11 @@
 	// ui functions
         ui.passData = function() {
             var type = ui.type.val();
+            var from = account.id;
             var to = ui.transferTo.val();
             var amount = ui.transferAmount.val();
-            var note = "";
-            transaction.init(type, to, amount, note);
+            var note = ui.transferNote.val();
+            transaction.init(type, from, to, amount, note);
         };
         
         ui.updateBalance = function() {
@@ -93,28 +94,32 @@
         // transaction object
         var transaction = {};
         
-        transaction.init = function(type, to, amount, note) {
+        transaction.init = function(type, from, to, amount, note) {
             transaction.type = type;
+            transaction.from = from;
             transaction.to = to;
             transaction.amount = parseFloat(amount);
             transaction.note = note;
             
             transaction.status = "pending";
-            transaction.from = account.id;
             transaction.time = new Date().toJSON();
            
             switch(transaction.type) {
                 case 'deposit':
-                    console.log("transaction type: deposit");
                     backEnd.updateBalance(transaction.to, transaction.amount);
-                    //transaction.deposit(tansaction.to, transaction.amount);
+                    
+                    var transId = backEnd.addTransaction(transaction.from, {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, note: transaction.note, status: transaction.status, time: transaction.time});
+                    backEnd.updateTransactionStatus(transaction.from, transId); 
                     break;
                     
                 case 'transfer':
-                    console.log("transaction type: transfer");
                     backEnd.updateBalanceIfExist(transaction.to, transaction.from, transaction.amount);
-                    //backEnd.updateBalanceIfExist(transaction.to, transaction.from, -transaction.amount);
-                    //transaction.transfer();
+                    
+                    var transId = backEnd.addTransaction(transaction.from, {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, note: transaction.note, status: transaction.status, time: transaction.time});
+                    backEnd.updateTransactionStatus(transaction.from, transId); 
+
+                    var transId = backEnd.addTransaction(transaction.to, {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, note: transaction.note, status: transaction.status, time: transaction.time});
+                    backEnd.updateTransactionStatus(transaction.to, transId); 
                     break;
             };
             
@@ -134,28 +139,27 @@
 	var backEnd = {};
 	
 	backEnd.init = function() {        
-            //var url = app.url + '/' + app.name + '/' + app.id + '/';
-            var rootUrl = app.url + app.name;
-            
+            var rootUrl = app.url + app.name;  
             backEnd.rootRef = new Firebase(rootUrl);
-                                
-            //backEnd.ref = backEnd.rootRef.child(app.id); //new Firebase(url);
-            //backEnd.tRef = backEnd.ref.child('trans');
-            var c = app.id + '/' + 'balance';
-            console.log(c);
-            //backEnd.aRef = backEnd.rootRef.child(c);
-               
+                                               
             // register backEnd events
-            backEnd.rootRef.on('child_added', backEnd.balanceIsUpdated); 
-            backEnd.rootRef.on('child_changed', backEnd.balanceIsUpdated);
-            
-            //backEnd.tRef.on('child_added', backEnd.transReceive); 
-            //backEnd.tRef.on('child_changed', backEnd.transReceive);  
+            backEnd.rootRef.child(app.id).on('child_added', backEnd.balanceIsUpdated); 
+            backEnd.rootRef.child(app.id).on('child_changed', backEnd.balanceIsUpdated);
 	};
         
- 	backEnd.push = function(obj) {
-            backEnd.tRef.push(obj);
+ 	backEnd.addTransaction = function(id, obj) {
+            var acctRef = backEnd.rootRef.child(id);
+            var transRef = acctRef.child('transactions').push(obj);
+            var transId = transRef.key();
+            console.log("transId: " + transId);
+            return transId;  
         };
+        
+        backEnd.updateTransactionStatus = function(id, transId) {
+            var acctRef = backEnd.rootRef.child(id);
+            acctRef.child('transactions').child(transId).update({status: 'received'});
+        };
+
         
         backEnd.updateBalance = function(id, amount) {
             var acctRef = backEnd.rootRef.child(id);
@@ -176,16 +180,16 @@
         };
         
 	backEnd.balanceIsUpdated = function(snapshot) {
-            var value = snapshot.val();
             var key = snapshot.key();
-                
-            if (app.debug) {
-                console.log(key + ": " + JSON.stringify(value));
-            }
             
-            account.balance = parseFloat(value.balance);
-            ui.updateBalance();
-            
+            //if (key == 'balance') {    
+                var value = snapshot.val();
+                if (app.debug)
+                    console.log(key + ": " + JSON.stringify(value));
+                        
+                account.balance = parseFloat(value);
+                ui.updateBalance();
+            //} 
 	};
         
         backEnd.transReceive = function(snapshot) {
@@ -209,8 +213,8 @@
         
         // injection code
         
-        transaction.init('deposit', '00970599548966', 10.00, "deposit");
-        transaction.init('deposit', 'abc', 25.00, "deposit");
+        transaction.init('deposit', '00970599548966', '00970599548966', 10.00, "deposit");
+        transaction.init('deposit', 'abc', 'abc', 25.00, "deposit");
 
 
 </script>
