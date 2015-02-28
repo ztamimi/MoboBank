@@ -96,7 +96,7 @@
         transaction.init = function(type, to, amount, note) {
             transaction.type = type;
             transaction.to = to;
-            transaction.amount = amount;
+            transaction.amount = parseFloat(amount);
             transaction.note = note;
             
             transaction.status = "pending";
@@ -106,31 +106,20 @@
             switch(transaction.type) {
                 case 'deposit':
                     console.log("transaction type: deposit");
-                    transaction.deposit();
+                    backEnd.updateBalance(transaction.to, transaction.amount);
+                    //transaction.deposit(tansaction.to, transaction.amount);
                     break;
                     
                 case 'transfer':
                     console.log("transaction type: transfer");
-                    transaction.transfer();
+                    backEnd.updateBalanceIfExist(transaction.to, transaction.from, transaction.amount);
+                    //backEnd.updateBalanceIfExist(transaction.to, transaction.from, -transaction.amount);
+                    //transaction.transfer();
                     break;
             };
             
         };
-        
-        transaction.transfer = function() {            
-            if (account.balance < transaction.amount) {
-                console.log("Error, cannot transfer amount more than account balance");
-                return;
-            }
-            backEnd.trans('balance', -transaction.amount);
-            backEnd.push('trans', {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, time: transaction.time, status: transaction.status});
-        };
-        
-        transaction.deposit = function() {
-            backEnd.trans('balance', transaction.amount);
-            backEnd.push('trans', {type: transaction.type, from: transaction.from, to: transaction.to, amount: transaction.amount, time: transaction.time, status: transaction.status}); 
-        };
-        
+               
         //=================================================================
         // account object
         var account = {};
@@ -146,29 +135,42 @@
 	
 	backEnd.init = function() {        
             var url = app.url + '/' + app.name + '/' + app.id + '/';
+            
+            var rootUrl = app.url + '/' + app.name + '/';
+            
+            backEnd.rootRef = new Firebase(rootUrl);
                                 
             backEnd.ref = new Firebase(url);
+            backEnd.tRef = backEnd.ref.child('trans');
+            backEnd.aRef = backEnd.ref.child('acct');
                
             // register backEnd events
-            backEnd.ref.on('child_added', backEnd.receive); 
-            backEnd.ref.on('child_changed', backEnd.receive);
+            backEnd.aRef.on('child_added', backEnd.receive); 
+            backEnd.aRef.on('child_changed', backEnd.receive);
             
-            
+            backEnd.tRef.on('child_added', backEnd.transReceive); 
+            backEnd.tRef.on('child_changed', backEnd.transReceive);  
 	};
-        /*
-	backEnd.send = function(obj) {
-            if (app.debug)
-		console.log("backEnd.send: " + obj);
-            backEnd.ref.update(obj);
-	};
-        */
-	backEnd.push = function(key, obj) {
-            backEnd.ref.child(key).push(obj);
+        
+ 	backEnd.push = function(obj) {
+            backEnd.tRef.push(obj);
         };
         
-        backEnd.trans = function(key, shift) {
-            backEnd.ref.child(key).transaction(function(currentValue) {
-                return currentValue + shift;
+        backEnd.updateBalance = function(id, amount) {
+            var acctRef = backEnd.rootRef.child(id);
+            acctRef.transaction(function(currentValue) {
+                return (currentValue) + parseFloat(amount);
+            });
+        };
+        
+        backEnd.updateBalanceIfExist = function(to, from, amount) {
+            backEnd.rootRef.once('value', function(snapshot) {
+                if (snapshot.hasChild(to)) {
+                    backEnd.updateBalance(to, amount);
+                    backEnd.updateBalance(from, -amount);
+                }
+                else
+                    console.log("account does not exist");
             });
         };
         
@@ -178,8 +180,7 @@
                 
             if (app.debug) {
 		console.log("backEnd.receive");
-                console.log(key + ": " + value);
-                console.log(JSON.stringify(value));
+                console.log(key + ": " + JSON.stringify(value));
             }
                 
             switch(key) {
@@ -188,13 +189,20 @@
                     account.balance = balance;
                     ui.updateBalance();
                     break;
-               /*     
-                default:
-                    var obj = JSON.parse(value);
-                    console.log(JSON.stringify(obj));
-                    break;
-                    */
             }
+	};
+        
+        backEnd.transReceive = function(snapshot) {
+            var value = snapshot.val();
+            var key = snapshot.key();
+                
+            if (app.debug) {
+		console.log("backEnd.transReceive");
+                console.log(key + ": " + JSON.stringify(value));  
+            }
+            
+            //var obj = JSON.parse(value);
+            //console.log(JSON.stringify(obj));
 	};
         
         
@@ -206,6 +214,8 @@
         // injection code
         
         transaction.init('deposit', '00970599548966', 10.00, "deposit");
+        transaction.init('deposit', 'abc', 25.00, "deposit");
+
 
 </script>
 <!-- end ui script -->
