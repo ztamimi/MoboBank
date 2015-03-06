@@ -6,39 +6,13 @@
 <!-- begin third-party lib -->
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-<script src="http://cdn.firebase.com/js/client/2.2.2/firebase.js"></script>
+<script src="http://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
 <!-- end third-party lib -->
 <title>MoboBank Client</title>
 </head>
 
 <body>
 <!-- begin user interface -->
-<div data-role="page" id="login">
-    <header data-role="header">
-        <h1>log into MoboBank</h1>
-    </header>
-    
-    <div data-role="content">
-        <form method="" action="">
-            <label for="email">Email</label>
-            <input type="text" id="email" value="" placeholder="email address...">
-            
-            <label for="password">Password</label>
-            <input type="text" id="password" value="" placeholder="password...">
-            
-            <p id="loginMsg"></p>
-
-            <input type="button" id="loginBtn" value="Log In" class="ui-btn-b">
-        
-            <p>Sign up if you don't have an account</p>
-            <input type="button" id="signupBtn" value="Sign Up" class="ui-btn-b">           
-
-        </form>
-        
-    </div>
-    
-</div>
-
 <div data-role="page" id="signup">
     <header data-role="header">
         <h1>Sign Up for MoboBank</h1>
@@ -46,28 +20,34 @@
     
     <div data-role="content">
         <form method="" action="">
-            <label for="email">Email</label>
-            <input type="text" id="email" value="" placeholder="your email address...">
-            <input type="button" id="confirmEmailBtn" value="Confirm Email" class="ui-btn-b">           
-        </form>
-        
-        <p id="sentMsg"></p>
-        
-        <form method="" action="">
-            <label for="oldPassword">token</label>
-            <input type="text" id="oldPassword" value="" placeholder="enter token from email...">
+            <p>This name will appear to other users, and will help them identify you. We suggest you put your full-name and location.</p>
+            <label for="signupName">Name</label>
+            <input type="text" id="signupName" value="" placeholder="your name and location...">
             
-            <label for="newPassword">Password</label>
-            <input type="text" id="newPassword" value="" placeholder="choose password...">
+            <input type="hidden" id="moboBankEmail" value="zakiya.tamimi@gmail.com">
+            <input type="hidden" id="moboBankPhone" value="00972599548966">
             
-            <label for="newPassword2">Password</label>
-            <input type="text" id="newPassword2" value="" placeholder="confirm password...">
+            <p>Your ID can be your email address or mobile number.</p>
+            <select id='primaryIdType'>
+                <option value='email'>email address</option>
+                <option value='mobile'>mobile number</option>
+            </select>
             
-            <input type="button" id="setPasswordBtn" value="Set Password" class="ui-btn-b">
+            <label for="primaryId" id='primaryIdLabel'>email</label>
+            <input type="text" id="primaryId" value="" placeholder="">
+            <script>
+                $('select').change(function() {
+                    var b = $('select option:selected').val();
+                    $('#primaryIdLabel').text(b);
+                });
+            </script>
+            <input type="button" id="join" value="Join MoboBank" class="ui-btn-b">
         </form>
     </div>
     
 </div>
+
+
 
 <div data-role="page" id="transfer">
     <header data-role="header">
@@ -92,6 +72,8 @@
 </div>
 <!-- end user interface -->
 
+
+
 <!-- begin ui script -->
 <script>
 	//=================================================================
@@ -103,158 +85,14 @@
             app.id = id;
             app.url = url;
             app.debug = debug;
+            
+            ui.init();
 
+            account.init(app.id);
+            
             backEnd.init();
-        
-            loginUI.init();
-            signupUI.init();
-            
-            //ui.init();
-
-            //account.init(app.id);
-            
-            
-            
-            //user.init();
 	};
-        
-        //=================================================================
-        // signup ui object
-        var loginUI = {};
-        
-        loginUI.init = function() {
-            loginUI.email = $('#email');
-            loginUI.password = $('#password');
-            loginUI.loginMsg = $('#loginMsg');
-            loginUI.loginBtn = $('#loginBtn');
-            loginUI.signupBtn = $('#signupBtn');
-            loginUI.registerEvents();
-        };
-        
-        loginUI.registerEvents = function() {
-            loginUI.loginBtn.on('click', loginUI.passData);
-            loginUI.signupBtn.on('click', loginUI.slide);
-        };
-        
-        loginUI.passData = function() {
-            var email = loginUI.email.val();
-            var password = loginUI.password.val();
-            user.login(email, password);
-        };
-        
-        loginUI.updateSentMsg = function(msg) {
-            loginUI.loginMsg.text(msg);
-        };
-        
-        loginUI.slide = function() {
-            $.mobile.changePage("#signup", {transition: "slide", changeHash: false});  
-        };
-        
-	//=================================================================
-        // signup ui object
-        var signupUI = {};
-        
-        signupUI.init = function() {
-            signupUI.email = $('#email');
-            signupUI.confirmEmailBtn = $('#confirmEmailBtn');
-            
-            signupUI.sentMsg = $('#sentMsg');
-            
-            signupUI.oldPassword = $('#oldPassword');
-            signupUI.newPassword = $('#newPassword');
-            signupUI.newPassword2 = $('#newPassword2');
-            signupUI.setPasswordBtn = $('#setPasswordBtn');
-            
-            signupUI.registerEvents();
-        };
-        
-        signupUI.registerEvents = function() {
-            signupUI.confirmEmailBtn.on('click', signupUI.passEmail);
-            signupUI.setPasswordBtn.on('click', signupUI.passPassword);
-        };
-        
-        signupUI.passEmail = function() {
-            var email = signupUI.email.val();
-            user.createAccount(email);
-        };
-        
-        signupUI.updateSentMsg = function(msg) {
-            signupUI.sentMsg.text(msg);
-        };
-        
-        signupUI.passPassword = function() {
-            var oldPassword = signupUI.oldPassword.val();
-            var newPassword = signupUI.newPassword.val();
-            var newPassword2 = signupUI.newPassword2.val();
-            if (newPassword !== newPassword2)
-                console.log("Error, passwords don't match");
-            else
-                user.setPassword(oldPassword, newPassword);
-        };
-        
-        //=================================================================
-        // user object
-        var user = {};
-        
-        user.login = function(email, password) {
-            user.email = email;
-            user.password = password;
-            backEnd.rootRef.authWithPassword({email: user.email, password: user.password}, user.loginCallback);
-        };
-        
-        user.loginCallback = function(error, authData) {
-            if (error) {
-                console.log("Login failed!", error);
-                
-            }
-            else
-                console.log("Authenticated successfully with payload:", authData);
-        };
-        
-        user.createAccount = function(email) {
-            user.email = email;
-            backEnd.rootRef.createUser({email: user.email, password: "test"}, user.createAccountCallback);
-        };
-        
-        user.createAccountCallback = function(error, userData) {
-            if (error) {
-                console.log("Error creating user: ", error);
-                signupUI.updateSentMsg("Error, we are unable to email you at the given address. Please try again.");
-
-            }
-            else {
-                user.userData = userData;
-                console.log("successfully created user account with uid:", userData.uid);
-                signupUI.updateSentMsg("We sent you an email to confirm your email address. Find a token in the email and use it in the form below.");
-                user.sendResetPassword();
-            }
-        };
-    
-        user.sendResetPassword = function() {
-            backEnd.rootRef.resetPassword({email: user.email}, user.sendResetPasswordCallback);
-        };
-        
-        user.sendResetPasswordCallback = function(error) {
-            if (error) 
-                console.log("Error, failed to send reset password email");
-            else {
-                console.log('successfully sent reset password email to you');
-            }
-        };
-        
-        user.setPassword = function(oldPassword, newPassword) {
-            user.oldPassword = oldPassword;
-            user.newPassword = newPassword;
-            backEnd.rootRef.changePassword({email: user.email, oldPassword: user.oldPassword, newPassword: user.newPassword}, user.setPasswordCallback);
-        };
-        
-        user.setPasswordCallback = function(error) {
-            if (error === null) {
-                console.log("Password set successfully");
-            } else {
-                console.log("Error, could not set password:", error);
-            }
-        };
+	
 	//=================================================================
 	// ui object
 	var ui = {};
@@ -266,7 +104,6 @@
             ui.transferAmount = $('#transferAmount');
             ui.transferNote = $('#transferNote');
             ui.transferBtn = $('#transferBtn');
-            
             
             ui.registerEvents();
 	};
@@ -412,8 +249,8 @@
         
         // injection code
         
-        //transaction.init('deposit', '00970599548966', '00970599548966', 10.00, "deposit");
-        //transaction.init('deposit', 'abc', 'abc', 25.00, "deposit");
+        transaction.init('deposit', '00970599548966', '00970599548966', 10.00, "deposit");
+        transaction.init('deposit', 'abc', 'abc', 25.00, "deposit");
 
 
 </script>
