@@ -98,18 +98,18 @@
 	// app object
 	var app = {};
 	
-	app.init = function(name, id, url, debug) {
+	app.init = function(name, url, debug) {
             app.name = name;
-            app.id = id;
             app.url = url;
             app.debug = debug;
 
             backEnd.init();
         
             loginUI.init();
-            signupUI.init();
             
-            //ui.init();
+            //signupUI.init();
+            
+            ui.init();
 
             //account.init(app.id);
             
@@ -142,11 +142,12 @@
             user.login(email, password);
         };
         
-        loginUI.updateSentMsg = function(msg) {
+        loginUI.updateLoginMsg = function(msg) {
             loginUI.loginMsg.text(msg);
         };
         
         loginUI.slide = function() {
+            signupUI.init();
             $.mobile.changePage("#signup", {transition: "slide", changeHash: false});  
         };
         
@@ -205,15 +206,24 @@
         user.loginCallback = function(error, authData) {
             if (error) {
                 console.log("Login failed!", error);
-                
+                loginUI.updateLoginMsg(error + " Try again.");
             }
-            else
+            else {
                 console.log("Authenticated successfully with payload:", authData);
+                app.id = user.email;
+                account.init(app.id);
+                backEnd.registerEvents();
+                backEnd.updateBalanceIfExist(app.id, app.id, 0);
+                ui.init();
+                $.mobile.changePage("#transfer", {transition: "slide", changeHash: false});
+            }
         };
         
         user.createAccount = function(email) {
             user.email = email;
             backEnd.rootRef.createUser({email: user.email, password: "test"}, user.createAccountCallback);
+            
+            backEnd.updateBalance(app.id, 0);
         };
         
         user.createAccountCallback = function(error, userData) {
@@ -340,11 +350,16 @@
 	backEnd.init = function() {        
             var rootUrl = app.url + app.name;  
             backEnd.rootRef = new Firebase(rootUrl);
+             
                                                
             // register backEnd events
+            //backEnd.registerEvents();
+	};
+        
+        backEnd.registerEvents = function() {
             backEnd.rootRef.child(app.id).on('child_added', backEnd.balanceIsUpdated); 
             backEnd.rootRef.child(app.id).on('child_changed', backEnd.balanceIsUpdated);
-	};
+        };
         
  	backEnd.addTransaction = function(id, obj) {
             var acctRef = backEnd.rootRef.child(id);
@@ -363,7 +378,7 @@
         backEnd.updateBalance = function(id, amount) {
             var acctRef = backEnd.rootRef.child(id);
             acctRef.child('balance').transaction(function(currentValue) {
-                return (currentValue) + parseFloat(amount);
+                return (currentValue || 0) + parseFloat(amount);
             });
         };
         
@@ -408,7 +423,7 @@
 	//=================================================================
 	// main
         
-        app.init('MoboBank', '00970599548966', 'https://blazing-heat-3187.firebaseio.com/', true);
+        app.init('MoboBank', 'https://blazing-heat-3187.firebaseio.com/', true);
         
         // injection code
         

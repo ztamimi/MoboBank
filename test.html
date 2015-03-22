@@ -1,0 +1,59 @@
+<script src="http://cdn.firebase.com/js/client/2.2.2/firebase.js"></script>
+
+<script>
+var app = {url: 'https://blazing-heat-3187.firebaseio.com/', name: 'test'};
+
+app.init = function() {
+    var rootUrl = app.url + app.name;  
+    app.rootRef = new Firebase(rootUrl);
+};
+
+app.doesKeyExist = function(key, tCallback, fCallback) {
+    app.rootRef.once('value', function(snapshot) {
+                if (snapshot.hasChild(key)) {
+                    tCallback();
+                }
+                else {
+                    fCallback();
+                }
+            });
+};
+
+app.doesKeyExist_v2 = function(key, callback) {
+    app.rootRef.once('value', function(snapshot) {
+                if (snapshot.hasChild(key)) {
+                    callback(true);
+                }
+                else {
+                    callback(false);
+                }
+            });
+};
+
+app.callback_v2 = function(found) {
+    if (found)
+        console.log("*************");
+    else
+        console.log("sorry");
+};
+
+app.addKey = function(key, value) {
+    app.rootRef.child(key).set(value);
+};
+
+app.callback = function(error, userData) {
+    if (error)
+        console.log(error);
+    else {
+        console.log("success");
+        console.log(userData);
+        app.userData = userData;
+    }
+};
+
+app.init();
+//app.addKey('zakiya_tamimi@yahoo', {balance: 0});
+//app.addKey('zakiya_tamimi@hotmail', {balance: 0});
+//app.doesKeyExist_v2('zakiya_tamimi@yahoo', app.callback_v2);
+app.rootRef.createUser({email: 'zakiya.tamimi@gmail.com', password: 'test'}, app.callback);
+</script>
