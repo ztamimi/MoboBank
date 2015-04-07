@@ -1,7 +1,7 @@
 
 var user = {uid: '', email: '', ref: ''};
 
-user.uid = function(uid) {
+user.setUid = function(uid) {
     user.uid = uid;
 };
 
@@ -13,6 +13,8 @@ user.setRef = function(ref) {
     user.ref = ref;
 };
 
+
+
 user.create = function(password, callback) {
     var ref = user.ref;
     var email = user.email;
@@ -21,10 +23,11 @@ user.create = function(password, callback) {
 
 user.createCallback = function(error, userData) {
     if (error) {
-        
+        console.log(error.message);
     }
     else {
         user.uid = userData.uid;
+        console.log("success");
     }
 };
 

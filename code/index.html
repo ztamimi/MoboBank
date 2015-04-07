@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>Sign up</title>
+        
+        <script data-main="js/app" src="js/require.js"></script>
+        
+    </head>
+    
+    <body>
+        
+        <div data-role="page" id="login">
+            
+            <header data-role="header">
+                
+                <h1>log into MoboBank</h1>
+                
+            </header>
+    
+            <div data-role="content">
+                
+                <form method="" action="">
+                    
+                    <label for="email">Email</label>
+                    <input type="text" id="email" value="" placeholder="email address...">
+                    <label for="password">Password</label>
+                    <input type="text" id="password" value="" placeholder="password...">
+                    <p id="loginMsg"></p>
+                    <input type="button" id="loginBtn" value="Log In" class="ui-btn-b">
+                    <p>Sign up if you don't have an account</p>
+                    <input type="button" id="signupBtn" value="Sign Up" class="ui-btn-b">
+                    
+                </form>
+                
+            </div>
+            
+            <footer>
+                
+            </footer>
+            
+        </div>      <!-- end login page -->
+        
+        <!--------------------------------------------------------------------->
+        
+        <div data-role="page" id="signup">
+            
+            <header data-role="header">
+                
+                <h1>Sign Up for MoboBank</h1>
+                
+            </header>
+    
+            <div data-role="content">
+                
+                <form method="" action="">
+                    
+                    <label for="email">Email</label>
+                    <input type="text" id="email" value="" placeholder="your email address...">
+                    <input type="button" id="confirmEmailBtn" value="Confirm Email" class="ui-btn-b">
+                    
+                </form>
+        
+                <p id="sentMsg"></p>
+        
+                <form method="" action="">
+                    
+                    <label for="oldPassword">token</label>
+                    <input type="text" id="oldPassword" value="" placeholder="enter token from email...">
+                    <label for="newPassword">Password</label>
+                    <input type="text" id="newPassword" value="" placeholder="choose password...">
+                    <label for="newPassword2">Password</label>
+                    <input type="text" id="newPassword2" value="" placeholder="confirm password...">
+                    <input type="button" id="setPasswordBtn" value="Set Password" class="ui-btn-b">
+                    
+                </form>
+                
+            </div>
+            
+            <footer>
+                
+            </footer>
+    
+        </div>      <!-- end of signup page -->
+        
+        <!--------------------------------------------------------------------->
+        
+        <div data-role="page" id="transfer">
+            
+            <header data-role="header">
+                
+                <h1>Transfer money</h1>
+                
+            </header>
+    
+            <div data-role="content">
+                
+                <form method="" action="">
+                    
+                    <label for="balance">Balance</label>
+                    <input type="text" id="balance" disabled value="" placeholder="loading...">
+                    <input type="hidden" id="type" value="transfer">
+                    <label for="transferTo">Transfer To:</label>
+                    <input type="text" id="transferTo" value="" placeholder="person to transfer to...">
+                    <label for="transferAmount">Amount:</label>
+                    <input type="number" id="transferAmount" value="" placeholder="amount to transfer...">
+                    <label for="transferNote">Note: </label>
+                    <textarea id="transferNote"></textarea>
+                    <input type="button" id="transferBtn" value="Transfer Now!" class="ui-btn-b">
+                    
+                </form>
+                
+            </div>
+            
+            <footer>
+                
+            </footer>
+    
+        </div>      <!-- end of transfer page -->
+        
+        <!--------------------------------------------------------------------->
+        
+    </body>
+    
+</html>

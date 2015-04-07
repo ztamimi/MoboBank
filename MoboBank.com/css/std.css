@@ -1,5 +1,5 @@
 body {
-	background-image: url(img/greece-2.jpg);
+	background-image: url(img/photo-1420745981456-b95fe23f5753.jpg);
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
@@ -17,4 +17,8 @@ body {
 section {
 	background-color: rgba(0, 0, 0, 0.6);
 	color: white;
+}
+
+.c4 {
+    background: #EEEEEE;
 }
