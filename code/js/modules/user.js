@@ -20,12 +20,12 @@ define(['modules/backend'], function(backend) {
     user.create = function(password) {
         console.log("user.create called");
         var email = user.email;
-        var error = backend.ref.createUser({email: email, password: password}, user.createCallback);
-        return error;
+        backend.ref.createUser({email: email, password: password}, user.createCallback);
     };
 
     user.createCallback = function(error, userData) {
         console.log("user.createCallback called");
+        
         if (error) {
             console.log(error.message);
         }
@@ -33,25 +33,39 @@ define(['modules/backend'], function(backend) {
             user.uid = userData.uid;
             console.log("user.uid: " + user.uid);
             console.log("successfully created user " + user.email);
+            user.sendResetEmail();
         }
     };
 
-    user.sendResetEmail = function(callback) {
+    user.sendResetEmail = function() {
         var email = user.email;
-        backend.ref.resetPassword({email: email}, callback);
+        backend.ref.resetPassword({email: email}, user.resetEmailCallback);
     };
 
-    user.changePassword = function(oldPassword, newPassword, callback) {
-        var email = user.email;
-        backend.ref.changePassword({email: email, oldPassword: oldPassword, newPassword: newPassword}, callback);
-    };
-
-    user.callback = function(error) {
+    user.resetEmailCallback = function(error) {
+        console.log("user.resetEmailCallback called");
         if (error) {
-            //console.log(error.message);
-            return error;
+            console.log(error.message);
+        }
+        else {
+            console.log("successfully reset email sent");
         }
     };
+    user.changePassword = function(oldPassword, newPassword) {
+        var email = user.email;
+        backend.ref.changePassword({email: email, oldPassword: oldPassword, newPassword: newPassword}, user.changePasswordCallback);
+    };
+
+    user.changePasswordCallback = function(error) {
+        console.log("user.changePasswordCallback called");
+        if (error) {
+            console.log(error.message);
+        }
+        else {
+            console.log("successfully changed password");
+        }
+    };
+    
     
     user.msgList = [
         {code: "EMAIL_TAKEN", message: "The specified email address is in use. ", resolution: "If this is your email address, please go to login page and select 'Forgot Password', in order to reset your password"},

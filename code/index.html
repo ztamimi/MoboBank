@@ -2,6 +2,9 @@
 <html>
     
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+        
         <title>Sign up</title>
         
         <script data-main="js/app" src="js/require.js"></script>
@@ -9,6 +12,48 @@
     </head>
     
     <body>
+        
+        <div data-role="page" id="signup">
+            
+            <header data-role="header">
+                
+                <h1>Sign Up for MoboBank</h1>
+                
+            </header>
+    
+            <div data-role="content">
+                
+                <form method="" action="">
+                    
+                    <label for="email">Email</label>
+                    <input type="text" id="emailInput" value="" placeholder="your email address...">
+                    <input type="button" id="confirmEmailBtn" value="Confirm Email" class="ui-btn-b">
+                    
+                </form>
+        
+                <p id="sentMsg"></p>
+        
+                <form method="" action="">
+                    
+                    <label for="oldPassword">token</label>
+                    <input type="text" id="oldPassword" value="" placeholder="enter token from email...">
+                    <label for="newPassword">Password</label>
+                    <input type="text" id="newPassword" value="" placeholder="choose password...">
+                    <label for="newPassword2">Password</label>
+                    <input type="text" id="newPassword2" value="" placeholder="confirm password...">
+                    <input type="button" id="setPasswordBtn" value="Set Password" class="ui-btn-b">
+                    
+                </form>
+                
+            </div>
+            
+            <footer>
+                
+            </footer>
+    
+        </div>      <!-- end of signup page -->
+        
+        <!--------------------------------------------------------------------->
         
         <div data-role="page" id="login">
             
@@ -40,48 +85,6 @@
             </footer>
             
         </div>      <!-- end login page -->
-        
-        <!--------------------------------------------------------------------->
-        
-        <div data-role="page" id="signup">
-            
-            <header data-role="header">
-                
-                <h1>Sign Up for MoboBank</h1>
-                
-            </header>
-    
-            <div data-role="content">
-                
-                <form method="" action="">
-                    
-                    <label for="email">Email</label>
-                    <input type="text" id="email" value="" placeholder="your email address...">
-                    <input type="button" id="confirmEmailBtn" value="Confirm Email" class="ui-btn-b">
-                    
-                </form>
-        
-                <p id="sentMsg"></p>
-        
-                <form method="" action="">
-                    
-                    <label for="oldPassword">token</label>
-                    <input type="text" id="oldPassword" value="" placeholder="enter token from email...">
-                    <label for="newPassword">Password</label>
-                    <input type="text" id="newPassword" value="" placeholder="choose password...">
-                    <label for="newPassword2">Password</label>
-                    <input type="text" id="newPassword2" value="" placeholder="confirm password...">
-                    <input type="button" id="setPasswordBtn" value="Set Password" class="ui-btn-b">
-                    
-                </form>
-                
-            </div>
-            
-            <footer>
-                
-            </footer>
-    
-        </div>      <!-- end of signup page -->
         
         <!--------------------------------------------------------------------->
         

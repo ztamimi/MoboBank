@@ -21,7 +21,7 @@ define (['modules/user', 'modules/password', 'modules/email'], function(user, pa
             user.setEmail(emailAddress);
         }
         else {
-            console.log("invalid email address");
+            console.log("invalid email address: " + user.email);
             return;
         }
         
@@ -30,7 +30,8 @@ define (['modules/user', 'modules/password', 'modules/email'], function(user, pa
         
         user.create(randomPassword);
         
-        user.sendResetEmail(user.callback);
+        //user.sendResetEmail(user.callback);
+        
         
         //user.changePassword(oldPassword, newPassword, user.callback);
     };
